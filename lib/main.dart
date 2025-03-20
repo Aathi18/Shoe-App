@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shoe_app/pages/HomePage.dart';
 import 'package:shoe_app/pages/LoginPage.dart';
 
 void main() {
@@ -17,7 +18,8 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: Color(0xFFCEDDEE)
       ),
       routes: {
-    "/" : (context) =>LoginPage()
+        "/" : (context) =>LoginPage(),
+        "HomePage" : (context) =>HomePage()
 
     },
 
