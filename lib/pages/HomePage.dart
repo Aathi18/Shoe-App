@@ -2,6 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/material/badge.dart';
 import 'package:badges/badges.dart' as custom_badge;
+import 'package:shoe_app/pages/AllItemsWidget.dart';
+import 'package:shoe_app/widgets/RowItemsWidget.dart';
+
+import '../widgets/RowItemsWidget.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -84,11 +88,27 @@ class HomePage extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        margin: EdgeInsets.only(left: 5),
-                      )
+                        width: 300,
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: "search",
+                          ),
+                        ),
+                      ),
+                      Spacer(),
+                      Icon(Icons.search,
+                      size: 27,
+                      color: Color(0xFF475269),)
                     ],
                   ),
-                )
+                ),
+                SizedBox(height: 30),
+                Rowitemswidget(),
+                SizedBox(
+                  height: 20,
+                ),
+                Allitemswidget(),
               ],
             ),
           )),

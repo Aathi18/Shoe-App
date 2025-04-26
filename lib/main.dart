@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shoe_app/pages/HomePage.dart';
 import 'package:shoe_app/pages/LoginPage.dart';
+import 'package:shoe_app/pages/itemPage.dart';
+
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +21,8 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         "/" : (context) =>LoginPage(),
-        "HomePage" : (context) =>HomePage()
+        "HomePage" : (context) =>HomePage(),
+        "itemPage" : (context) => Itempage()
 
     },
 
