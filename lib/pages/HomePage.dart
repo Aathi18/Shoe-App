@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/material/badge.dart';
 import 'package:badges/badges.dart' as custom_badge;
 import 'package:shoe_app/pages/AllItemsWidget.dart';
+import 'package:shoe_app/pages/HomeBottomNavBar.dart';
 import 'package:shoe_app/widgets/RowItemsWidget.dart';
 
 import '../widgets/RowItemsWidget.dart';
@@ -112,6 +113,7 @@ class HomePage extends StatelessWidget {
               ],
             ),
           )),
+      bottomNavigationBar: Homebottomnavbar(),
     );
   }
 }
