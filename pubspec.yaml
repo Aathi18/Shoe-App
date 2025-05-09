@@ -32,7 +32,14 @@ dependencies:
     sdk: flutter
   badges: ^3.1.2
   flutter_rating_bar: ^4.0.1
-  sliding_sheet: ^0.5.2
+  modal_bottom_sheet: ^3.0.0
+  firebase_core: any
+  firebase_auth: any
+  cloud_firestore: any
+
+
+
+
 
 
   # The following adds the Cupertino Icons font to your application.

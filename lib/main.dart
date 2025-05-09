@@ -1,31 +1,57 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:shoe_app/pages/HomePage.dart';
 import 'package:shoe_app/pages/LoginPage.dart';
+import 'package:shoe_app/pages/SignupPage.dart';
 import 'package:shoe_app/pages/itemPage.dart';
 
-
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyCTW_u-SOEpvLiWSS6uaY7czERwPpblJ2o",
+      appId: "1:662291047715:web:684c76aee3640ce480d896",
+      messagingSenderId: "662291047715",
+      projectId: "shoe-store-app-e9350",
+    ),
+  );
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Shoe Store App',
       debugShowCheckedModeBanner: false,
-      theme:ThemeData(
-          scaffoldBackgroundColor: Color(0xFFCEDDEE)
+      theme: ThemeData(
+        scaffoldBackgroundColor: Color(0xFFCEDDEE),
+        primarySwatch: Colors.blue,
       ),
       routes: {
-        "/" : (context) =>LoginPage(),
-        "HomePage" : (context) =>HomePage(),
-        "itemPage" : (context) => Itempage()
 
-    },
-
+        "loginPage" : (context) => LoginPage(),
+        "signupPage" : (context) => SignupPage(),
+        "itemPage" : (context) => Itempage(),
+      },
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasData) {
+            // User is logged in
+            return HomePage();
+          } else {
+            // User is NOT logged in
+            return LoginPage();
+          }
+        },
+      ),
     );
   }
 }

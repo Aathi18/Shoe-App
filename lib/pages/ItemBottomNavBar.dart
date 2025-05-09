@@ -1,5 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+
+
+import 'BottomCartSheet.dart';
 
 class Itembottomnavbar extends StatelessWidget {
   const Itembottomnavbar({super.key});
@@ -55,10 +59,18 @@ class Itembottomnavbar extends StatelessWidget {
                 ]
             ),
             child:
-                Icon(Icons.shopping_bag,
-                  color: Colors.white,
-                  size: 45,),
-            ),
+    InkWell(
+    onTap: (){
+      showMaterialModalBottomSheet(
+        context: context,
+        builder: (context) => Bottomcartsheet(),
+      );
+
+    },
+      child: Icon(Icons.shopping_bag,
+        color: Colors.white,
+        size: 45,),
+    ),),
         ],
       ),
     );

@@ -1,27 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+class SignupPage extends StatefulWidget {
+  const SignupPage({Key? key}) : super(key: key);
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
-  Future<void> loginUser() async {
+  Future<void> signupUser() async {
+    if (_passwordController.text.trim() != _confirmPasswordController.text.trim()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Passwords do not match")),
+      );
+      return;
+    }
+
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
       Navigator.pushReplacementNamed(context, "/");
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login Failed: ${e.toString()}")),
+        SnackBar(content: Text("Signup Failed: ${e.toString()}")),
       );
     }
   }
@@ -29,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE8F0F9), // Soft Blue background
+      backgroundColor: Color(0xFFE8F0F9), // Same soft blue background
       body: Center(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(24),
@@ -37,7 +45,7 @@ class _LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Welcome Back!",
+                "Create Account",
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -46,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               SizedBox(height: 10),
               Text(
-                "Login to continue",
+                "Sign up to get started",
                 style: TextStyle(
                   fontSize: 18,
                   color: Colors.grey.shade700,
@@ -82,19 +90,23 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               SizedBox(height: 20),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    "Forgot Password?",
-                    style: TextStyle(color: Colors.blueAccent),
+              TextField(
+                controller: _confirmPasswordController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  hintText: "Confirm Password",
+                  prefixIcon: Icon(Icons.lock_outline, color: Colors.blueAccent),
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 30),
               ElevatedButton(
-                onPressed: loginUser,
+                onPressed: signupUser,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF0A043C),
                   padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
@@ -103,21 +115,21 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 child: Text(
-                  "Login",
+                  "Sign Up",
                   style: TextStyle(fontSize: 18),
                 ),
               ),
-              SizedBox(height: 30),
+              SizedBox(height: 20),
               Text(
-                "Don't have an account?",
+                "Already have an account?",
                 style: TextStyle(color: Colors.grey.shade700),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, "signupPage");
+                  Navigator.pushNamed(context, "loginPage");
                 },
                 child: Text(
-                  "Sign Up",
+                  "Login",
                   style: TextStyle(
                     color: Colors.blueAccent,
                     fontWeight: FontWeight.bold,

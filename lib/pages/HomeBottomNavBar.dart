@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shoe_app/pages/BottomCartSheet.dart';
-import 'package:sliding_sheet/sliding_sheet.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+
 
 class Homebottomnavbar extends StatelessWidget {
   const Homebottomnavbar({super.key});
@@ -25,16 +26,11 @@ class Homebottomnavbar extends StatelessWidget {
           size: 32,),
           InkWell(
             onTap: (){
-              showSlidingBottomSheet(context, builder: (context){
-                return SlidingSheetDialog(
-                  elevation: 8,
-                  cornerRadius: 16,
-                  builder: (context,state){
-                    return Bottomcartsheet();
-                  }
-                );
-              }
+              showMaterialModalBottomSheet(
+                context: context,
+                builder: (context) => Bottomcartsheet(),
               );
+
             },
             child: Icon(CupertinoIcons.cart_fill,color: Colors.white,
               size: 32,),
