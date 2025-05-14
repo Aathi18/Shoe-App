@@ -1,119 +1,153 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/material/badge.dart';
-import 'package:badges/badges.dart' as custom_badge;
-import 'package:shoe_app/pages/AllItemsWidget.dart';
-import 'package:shoe_app/pages/HomeBottomNavBar.dart';
-import 'package:shoe_app/widgets/RowItemsWidget.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import '../providers/cart_provider.dart';
+import 'package:badges/badges.dart' as badges;
 
-import '../widgets/RowItemsWidget.dart';
+import 'CartPage.dart';
+
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
+      backgroundColor: const Color(0xFFCEDDEE),
+      appBar: AppBar(
+        title: const Text("Shoe Store"),
+        backgroundColor: Colors.blueAccent,
+        actions: [
+          Consumer<CartProvider>(
+            builder: (context, cart, child) {
+              return IconButton(
+                icon: badges.Badge(
+                  badgeContent: Text(
+                    cart.itemCount.toString(),
+                    style: const TextStyle(color: Colors.white, fontSize: 10),
+                  ),
+                  badgeStyle: const badges.BadgeStyle(badgeColor: Colors.red),
+                  child: const Icon(Icons.shopping_cart),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const CartPage()),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+
       body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                    padding: EdgeInsets.all(15),
-                child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                  Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xFF475269).withOpacity(0.3),
-                          blurRadius: 5,
-                          spreadRadius: 1,
-                        )
-                      ]
-                    ),
-                    child: Icon(Icons.sort,
-                    size: 30,
-                    color: Color(0xFF475269),
-                    ),
-                  ),
-                  Container(
-                    padding:EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Color(0xFFF5F9FD),
-                      borderRadius: BorderRadius.circular(8),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xFF475269).withOpacity(0.3),
-                          blurRadius: 5,
-                          spreadRadius: 1,
-                        )
-                      ]
-                    ),
-                    child: const Badge(
-                        backgroundColor:Colors.redAccent,
-                        padding:EdgeInsets.all(7),
-                        label:Text("3",style: TextStyle(
-                          color: Colors.white,
-                        ),),
-                      child: Icon(Icons.notifications,
-                        size: 30,
-                        color: Color(0xFF475269),
-                      ),
+        child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection('shoes').snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return const Center(child: Text("No shoes found"));
+            }
 
-                    ),
-                        
-                  )
-                ],),),
-                SizedBox(height: 15),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 15),
-                  padding: EdgeInsets.symmetric(horizontal: 15),
-                  height: 55,
+            final shoes = snapshot.data!.docs;
+
+            return GridView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: shoes.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.75,
+                mainAxisSpacing: 16,
+                crossAxisSpacing: 16,
+              ),
+              itemBuilder: (context, index) {
+                final shoe = shoes[index];
+                final data = shoe.data() as Map<String, dynamic>;
+
+                print("Shoe Data: $data");
+
+                final price = data['price'];
+                final priceText = (price is int || price is double)
+                    ? "\$${price.toStringAsFixed(2)}"
+                    : "\$0.00";
+
+                return Container(
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: Color(0xFFF5F9F0),
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xFF475269).withOpacity(0.3),
-                        blurRadius: 5,
-                        spreadRadius: 1,
-                      )
-                    ]
+                    color: const Color(0xFFF5F9FD),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 4)],
                   ),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 300,
-                        child: TextFormField(
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            hintText: "search",
-                          ),
+                      Image.network(
+                        data['image'] ?? '',
+                        height: 100,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.image_not_supported),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        data['name'] ?? 'No Name',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF475269),
                         ),
                       ),
-                      Spacer(),
-                      Icon(Icons.search,
-                      size: 27,
-                      color: Color(0xFF475269),)
+                      Text(
+                        data['description'] ?? '',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                      const Spacer(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            priceText,
+                            style: const TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.add_shopping_cart, color: Colors.blue),
+                            onPressed: () {
+                              Provider.of<CartProvider>(context, listen: false).addItem(
+                                id: shoe.id,
+                                name: data['name'],
+                                image: data['image'],
+                                price: (data['price'] as num).toDouble(),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text("${data['name']} added to cart"),
+                                  duration: const Duration(seconds: 1),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
                     ],
                   ),
-                ),
-                SizedBox(height: 30),
-                Rowitemswidget(),
-                SizedBox(
-                  height: 20,
-                ),
-                Allitemswidget(),
-              ],
-            ),
-          )),
-      bottomNavigationBar: Homebottomnavbar(),
+                );
+              },
+            );
+          },
+        ),
+      ),
     );
   }
 }

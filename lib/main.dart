@@ -1,11 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 import 'package:shoe_app/pages/HomePage.dart';
 import 'package:shoe_app/pages/LoginPage.dart';
 import 'package:shoe_app/pages/SignupPage.dart';
 import 'package:shoe_app/pages/itemPage.dart';
+import 'package:shoe_app/providers/cart_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +19,10 @@ void main() async {
       projectId: "shoe-store-app-e9350",
     ),
   );
-  runApp(const MyApp());
+  runApp( ChangeNotifierProvider(
+    create: (_) => CartProvider(),
+    child: MyApp(),
+  ),);
 }
 
 class MyApp extends StatelessWidget {
@@ -38,20 +43,21 @@ class MyApp extends StatelessWidget {
         "signupPage" : (context) => SignupPage(),
         "itemPage" : (context) => Itempage(),
       },
-      home: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasData) {
-            // User is logged in
-            return HomePage();
-          } else {
-            // User is NOT logged in
-            return LoginPage();
-          }
-        },
-      ),
+      home: HomePage()
+      // StreamBuilder<User?>(
+      //   stream: FirebaseAuth.instance.authStateChanges(),
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return const Center(child: CircularProgressIndicator());
+      //     } else if (snapshot.hasData) {
+      //       // User is logged in
+      //       return HomePage();
+      //     } else {
+      //       // User is NOT logged in
+      //       return LoginPage();
+      //     }
+      //   },
+      // ),
     );
   }
 }
