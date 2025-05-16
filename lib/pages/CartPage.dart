@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
@@ -62,6 +64,48 @@ class CartPage extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text("Checkout coming soon!")),
                     );
+                    ElevatedButton(
+                      onPressed: () async {
+                        try {
+                          final user = FirebaseAuth.instance.currentUser;
+
+                          if (user == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Please login first")),
+                            );
+                            return;
+                          }
+
+                          final cart = Provider.of<CartProvider>(context, listen: false);
+
+                          await FirebaseFirestore.instance.collection("orders").add({
+                            "userId": user.uid,
+                            "total": cart.totalAmount,
+                            "timestamp": FieldValue.serverTimestamp(),
+                            "items": cart.cartItemsList, // Our method from provider
+                          });
+
+                          cart.clearCart();
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Order placed successfully")),
+                          );
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Failed to place order: $e")),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text("Checkout", style: TextStyle(fontSize: 16)),
+                    );
+
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent,

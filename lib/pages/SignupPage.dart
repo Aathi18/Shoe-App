@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class SignupPage extends StatefulWidget {
-  const SignupPage({Key? key}) : super(key: key);
+  const SignupPage({super.key});
 
   @override
   State<SignupPage> createState() => _SignupPageState();
@@ -13,7 +13,7 @@ class _SignupPageState extends State<SignupPage> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
-  Future<void> signupUser() async {
+  Future<void> _signup() async {
     if (_passwordController.text.trim() != _confirmPasswordController.text.trim()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Passwords do not match")),
@@ -26,10 +26,11 @@ class _SignupPageState extends State<SignupPage> {
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
       );
+
       Navigator.pushReplacementNamed(context, "/");
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Signup Failed: ${e.toString()}")),
+        SnackBar(content: Text("Signup failed: ${e.toString()}")),
       );
     }
   }
@@ -37,106 +38,42 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFE8F0F9), // Same soft blue background
+      backgroundColor: const Color(0xFFE8F0F9),
       body: Center(
         child: SingleChildScrollView(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                "Create Account",
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0A043C),
-                ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                "Sign up to get started",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey.shade700,
-                ),
-              ),
-              SizedBox(height: 40),
+              const Text("Sign Up", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 30),
               TextField(
                 controller: _emailController,
-                decoration: InputDecoration(
-                  hintText: "Email",
-                  prefixIcon: Icon(Icons.email_outlined, color: Colors.blueAccent),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+                decoration: const InputDecoration(labelText: "Email"),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 15),
               TextField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Password",
-                  prefixIcon: Icon(Icons.lock_outline, color: Colors.blueAccent),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+                decoration: const InputDecoration(labelText: "Password"),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 15),
               TextField(
                 controller: _confirmPasswordController,
                 obscureText: true,
-                decoration: InputDecoration(
-                  hintText: "Confirm Password",
-                  prefixIcon: Icon(Icons.lock_outline, color: Colors.blueAccent),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+                decoration: const InputDecoration(labelText: "Confirm Password"),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: signupUser,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF0A043C),
-                  padding: EdgeInsets.symmetric(horizontal: 100, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  "Sign Up",
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
-              SizedBox(height: 20),
-              Text(
-                "Already have an account?",
-                style: TextStyle(color: Colors.grey.shade700),
+                onPressed: _signup,
+                style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
+                child: const Text("Create Account"),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, "loginPage");
+                  Navigator.pop(context);
                 },
-                child: Text(
-                  "Login",
-                  style: TextStyle(
-                    color: Colors.blueAccent,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-              )
+                child: const Text("Already have an account? Login"),
+              ),
             ],
           ),
         ),

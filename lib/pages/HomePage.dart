@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,12 @@ class HomePage extends StatelessWidget {
         title: const Text("Shoe Store"),
         backgroundColor: Colors.blueAccent,
         actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, "ordersPage");
+            },
+            child: const Text("My Orders", style: TextStyle(color: Colors.white)),
+          ),
           Consumer<CartProvider>(
             builder: (context, cart, child) {
               return IconButton(
@@ -26,7 +33,9 @@ class HomePage extends StatelessWidget {
                     cart.itemCount.toString(),
                     style: const TextStyle(color: Colors.white, fontSize: 10),
                   ),
-                  badgeStyle: const badges.BadgeStyle(badgeColor: Colors.red),
+                  badgeStyle: const badges.BadgeStyle(
+                    badgeColor: Colors.red,
+                  ),
                   child: const Icon(Icons.shopping_cart),
                 ),
                 onPressed: () {
@@ -38,9 +47,16 @@ class HomePage extends StatelessWidget {
               );
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              // Log out from Firebase
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacementNamed(context, "loginPage");
+            },
+          ),
         ],
       ),
-
       body: SafeArea(
         child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection('shoes').snapshots(),
@@ -67,8 +83,6 @@ class HomePage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final shoe = shoes[index];
                 final data = shoe.data() as Map<String, dynamic>;
-
-                print("Shoe Data: $data");
 
                 final price = data['price'];
                 final priceText = (price is int || price is double)

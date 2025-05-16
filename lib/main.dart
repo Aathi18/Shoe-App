@@ -2,9 +2,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:shoe_app/pages/CartPage.dart';
 
 import 'package:shoe_app/pages/HomePage.dart';
 import 'package:shoe_app/pages/LoginPage.dart';
+import 'package:shoe_app/pages/OrdersPage.dart';
 import 'package:shoe_app/pages/SignupPage.dart';
 import 'package:shoe_app/pages/itemPage.dart';
 import 'package:shoe_app/providers/cart_provider.dart';
@@ -19,10 +21,12 @@ void main() async {
       projectId: "shoe-store-app-e9350",
     ),
   );
-  runApp( ChangeNotifierProvider(
-    create: (_) => CartProvider(),
-    child: MyApp(),
-  ),);
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => CartProvider(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -31,33 +35,34 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Shoe Store App',
+      title: 'Shoe Store',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: Color(0xFFCEDDEE),
+        scaffoldBackgroundColor: const Color(0xFFCEDDEE),
         primarySwatch: Colors.blue,
       ),
       routes: {
+        "loginPage": (context) => const LoginPage(),
+        "signupPage": (context) => const SignupPage(),
+        "cartPage": (context) => const CartPage(),
+        "ordersPage": (context) => const OrdersPage(),
 
-        "loginPage" : (context) => LoginPage(),
-        "signupPage" : (context) => SignupPage(),
-        "itemPage" : (context) => Itempage(),
       },
-      home: HomePage()
-      // StreamBuilder<User?>(
-      //   stream: FirebaseAuth.instance.authStateChanges(),
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.waiting) {
-      //       return const Center(child: CircularProgressIndicator());
-      //     } else if (snapshot.hasData) {
-      //       // User is logged in
-      //       return HomePage();
-      //     } else {
-      //       // User is NOT logged in
-      //       return LoginPage();
-      //     }
-      //   },
-      // ),
+      // ✅ This handles login -> home page
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          } else if (snapshot.hasData) {
+            return const HomePage();
+          } else {
+            return const LoginPage();
+          }
+        },
+      ),
     );
   }
 }

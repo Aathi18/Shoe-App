@@ -42,4 +42,16 @@ class CartProvider with ChangeNotifier {
     _items.clear();
     notifyListeners();
   }
+  List<Map<String, dynamic>> get cartItemsList {
+    return _items.values.map((item) {
+      return {
+        "id": item.id,
+        "name": item.name,
+        "price": item.price,
+        "quantity": item.quantity,
+        "image": item.image,
+      };
+    }).toList();
+  }
+
 }
