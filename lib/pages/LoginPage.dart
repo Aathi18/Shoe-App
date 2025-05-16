@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../services/auth_service.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -75,7 +77,28 @@ class _LoginPageState extends State<LoginPage> {
                 },
                 child: const Text("Don't have an account? Sign up"),
               ),
-            ],
+
+
+// Inside your Widget
+        ElevatedButton.icon(
+        icon: Image.asset('assets/google.png', height: 24), // Or use Icon(Icons.g_mobiledata)
+        label: const Text("Sign in with Google"),
+        onPressed: () async {
+          final user = await AuthService().signInWithGoogle();
+          if (user != null) {
+            // Login successful, StreamBuilder will redirect
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Signed in with Google")),
+            );
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Google sign-in failed")),
+            );
+          }
+        },
+      ),
+
+      ],
           ),
         ),
       ),

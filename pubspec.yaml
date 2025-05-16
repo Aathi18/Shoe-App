@@ -38,6 +38,7 @@ dependencies:
   cloud_firestore: any
   provider: ^6.1.1
   intl: ^0.18.1
+  google_sign_in: ^6.2.1
 
 
 
@@ -78,6 +79,7 @@ flutter:
     - images/3.png
     - images/4.png
     - images/5.png
+    - assets/google.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see
