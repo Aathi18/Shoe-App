@@ -2,13 +2,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:shoe_app/pages/CartPage.dart';
 
+import 'package:shoe_app/pages/CartPage.dart';
 import 'package:shoe_app/pages/HomePage.dart';
 import 'package:shoe_app/pages/LoginPage.dart';
 import 'package:shoe_app/pages/OrdersPage.dart';
 import 'package:shoe_app/pages/SignupPage.dart';
 import 'package:shoe_app/pages/itemPage.dart';
+import 'package:shoe_app/pages/GoogleSignInPage.dart'; // ✅ Import GoogleSignInPage
+
 import 'package:shoe_app/providers/cart_provider.dart';
 
 void main() async {
@@ -21,6 +23,7 @@ void main() async {
       projectId: "shoe-store-app-e9350",
     ),
   );
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => CartProvider(),
@@ -46,9 +49,10 @@ class MyApp extends StatelessWidget {
         "signupPage": (context) => const SignupPage(),
         "cartPage": (context) => const CartPage(),
         "ordersPage": (context) => const OrdersPage(),
-
+        "itemPage": (context) => const Itempage(),
+        "googleSignInPage": (context) => const GoogleSignInPage(), // ✅ Add route
       },
-      // ✅ This handles login -> home page
+      // ✅ Automatically navigate based on login state
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
@@ -59,7 +63,7 @@ class MyApp extends StatelessWidget {
           } else if (snapshot.hasData) {
             return const HomePage();
           } else {
-            return const LoginPage();
+            return const LoginPage(); // Could replace with GoogleSignInPage() for testing
           }
         },
       ),
