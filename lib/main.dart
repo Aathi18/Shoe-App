@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:shoe_app/pages/theme_provider.dart';
 
 import 'firebase_options.dart';
 import 'pages/HomePage.dart';
@@ -11,6 +12,7 @@ import 'pages/CartPage.dart';
 import 'pages/OrdersPage.dart';
 import 'pages/itemPage.dart';
 import 'providers/cart_provider.dart';
+import 'providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +21,11 @@ void main() async {
    );
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => CartProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()), // <-- NEW
+      ],
       child: const MyApp(),
     ),
   );

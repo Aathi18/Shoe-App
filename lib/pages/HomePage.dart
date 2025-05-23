@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:shoe_app/pages/theme_provider.dart';
 
 import '../providers/cart_provider.dart';
 import 'CartPage.dart';
@@ -52,6 +53,17 @@ class HomePage extends StatelessWidget {
               ),
             ),
           ),
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, _) => IconButton(
+              icon: Icon(
+                themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+              ),
+              onPressed: () {
+                themeProvider.toggleTheme();
+              },
+            ),
+          ),
+
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
