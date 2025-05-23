@@ -1,28 +1,22 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
-import 'package:shoe_app/pages/CartPage.dart';
-import 'package:shoe_app/pages/HomePage.dart';
-import 'package:shoe_app/pages/LoginPage.dart';
-import 'package:shoe_app/pages/OrdersPage.dart';
-import 'package:shoe_app/pages/SignupPage.dart';
-import 'package:shoe_app/pages/itemPage.dart';
-import 'package:shoe_app/pages/GoogleSignInPage.dart'; // ✅ Import GoogleSignInPage
-
-import 'package:shoe_app/providers/cart_provider.dart';
+import 'firebase_options.dart';
+import 'pages/HomePage.dart';
+import 'pages/LoginPage.dart';
+import 'pages/SignupPage.dart';
+import 'pages/CartPage.dart';
+import 'pages/OrdersPage.dart';
+import 'pages/itemPage.dart';
+import 'providers/cart_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: const FirebaseOptions(
-      apiKey: "AIzaSyCTW_u-SOEpvLiWSS6uaY7czERwPpblJ2o",
-      appId: "1:662291047715:web:684c76aee3640ce480d896",
-      messagingSenderId: "662291047715",
-      projectId: "shoe-store-app-e9350",
-    ),
-  );
+   await Firebase.initializeApp(
+     options: DefaultFirebaseOptions.currentPlatform,
+   );
 
   runApp(
     ChangeNotifierProvider(
@@ -50,20 +44,17 @@ class MyApp extends StatelessWidget {
         "cartPage": (context) => const CartPage(),
         "ordersPage": (context) => const OrdersPage(),
         "itemPage": (context) => const Itempage(),
-        "googleSignInPage": (context) => const GoogleSignInPage(), // ✅ Add route
+        HomePage.appRouteName: (context) => const HomePage(),
       },
-      // ✅ Automatically navigate based on login state
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
+            return const Scaffold(body: Center(child: CircularProgressIndicator()));
           } else if (snapshot.hasData) {
             return const HomePage();
           } else {
-            return const LoginPage(); // Could replace with GoogleSignInPage() for testing
+            return const LoginPage();
           }
         },
       ),
