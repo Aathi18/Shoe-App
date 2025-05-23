@@ -6,6 +6,7 @@ import 'package:badges/badges.dart' as badges;
 
 import '../providers/cart_provider.dart';
 import 'CartPage.dart';
+import 'UserProfilePage.dart';
 
 class HomePage extends StatelessWidget {
   static const appRouteName = "/homepage";
@@ -25,6 +26,16 @@ class HomePage extends StatelessWidget {
             onPressed: () => Navigator.pushNamed(context, "ordersPage"),
             child: const Text("My Orders", style: TextStyle(color: Colors.white)),
           ),
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const UserProfilePage()),
+              );
+            },
+          ),
+
           Consumer<CartProvider>(
             builder: (context, cart, _) => IconButton(
               icon: badges.Badge(
