@@ -20,7 +20,7 @@ class CartProvider with ChangeNotifier {
     required String id,
     required String name,
     required String image,
-    required double price,
+    required double price, required quantity,
   }) {
     if (_items.containsKey(id)) {
       _items[id]!.quantity += 1;

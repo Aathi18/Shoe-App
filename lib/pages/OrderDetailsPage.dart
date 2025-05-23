@@ -1,7 +1,8 @@
-// lib/pages/OrderDetailsPage.dart
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../providers/cart_provider.dart';
+import 'CartPage.dart';
 
 class OrderDetailsPage extends StatelessWidget {
   final Map<String, dynamic> orderData;
@@ -10,9 +11,9 @@ class OrderDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final date = orderData['timestamp']?.toDate();
-    final total = orderData['total'];
-    final items = List<Map<String, dynamic>>.from(orderData['items']);
+    final date = orderData["timestamp"]?.toDate();
+    final items = List<Map<String, dynamic>>.from(orderData["items"]);
+    final total = orderData["total"];
 
     return Scaffold(
       appBar: AppBar(
@@ -22,42 +23,79 @@ class OrderDetailsPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Order Date: ${date != null ? DateFormat.yMMMd().add_jm().format(date) : 'N/A'}",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "Order Date: ${date != null ? DateFormat.yMMMMEEEEd().add_jm().format(date) : "N/A"}",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
-            const SizedBox(height: 10),
-            Text("Total: \$${total.toStringAsFixed(2)}",
-                style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 20),
-            const Text("Items:",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const SizedBox(height: 16),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text("Items:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
             const SizedBox(height: 10),
             Expanded(
               child: ListView.builder(
                 itemCount: items.length,
-                itemBuilder: (context, index) {
+                itemBuilder: (_, index) {
                   final item = items[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 6),
-                    child: ListTile(
-                      leading: Image.network(
-                        item['image'],
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                        const Icon(Icons.image_not_supported),
-                      ),
-                      title: Text(item['name']),
-                      subtitle: Text(
-                        "Qty: ${item['quantity']} • \$${item['price'].toStringAsFixed(2)}",
-                      ),
+                  return ListTile(
+                    leading: Image.network(
+                      item['image'],
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
                     ),
+                    title: Text(item['name']),
+                    subtitle: Text("₹${item['price']} x ${item['quantity']}"),
+                    trailing: Text("₹${(item['price'] * item['quantity']).toStringAsFixed(2)}"),
                   );
                 },
+              ),
+            ),
+            const Divider(height: 32),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                "Total: ₹${total.toStringAsFixed(2)}",
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // ✅ REORDER BUTTON
+            ElevatedButton.icon(
+              onPressed: () {
+                final cart = Provider.of<CartProvider>(context, listen: false);
+                for (var item in items) {
+                  cart.addItem(
+                    id: item['name'], // or use item['id'] if available
+                    name: item['name'],
+                    image: item['image'],
+                    price: (item['price'] as num).toDouble(),
+                    quantity: item['quantity'], // Optional: add multiple
+                  );
+                }
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Items added to cart.")),
+                );
+
+                // Optionally navigate to CartPage
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const CartPage()),
+                );
+              },
+              icon: const Icon(Icons.replay),
+              label: const Text("Reorder Items"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
               ),
             ),
           ],

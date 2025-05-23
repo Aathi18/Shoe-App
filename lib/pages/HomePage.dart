@@ -189,7 +189,7 @@ class HomePage extends StatelessWidget {
                                       id: shoe.id,
                                       name: data['name'],
                                       image: data['image'],
-                                      price: (data['price'] as num).toDouble(),
+                                      price: (data['price'] as num).toDouble(), quantity: null,
                                     );
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
