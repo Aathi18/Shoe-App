@@ -20,8 +20,13 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text("Shoe Store"),
-        backgroundColor: Colors.blueAccent,
+      backgroundColor: Colors.blueAccent,
+        title: Row(children: [
+          Image.asset('images/4.png', height: 100),
+          SizedBox(width: 10),
+         Text("Shoe Store"),
+        ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pushNamed(context, "ordersPage"),
@@ -36,6 +41,13 @@ class HomePage extends StatelessWidget {
               );
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.add_box),
+            onPressed: () {
+              Navigator.pushNamed(context, "addShoePage");
+            },
+          ),
+
 
           Consumer<CartProvider>(
             builder: (context, cart, _) => IconButton(

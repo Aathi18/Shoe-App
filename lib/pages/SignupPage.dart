@@ -43,7 +43,11 @@ class _SignupPageState extends State<SignupPage> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
+
             children: [
+              Image.asset('assets/images/logo.jpg', height: 300),
+              SizedBox(height: 20),
+
               const Text("Sign Up", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
               const SizedBox(height: 30),
               TextField(

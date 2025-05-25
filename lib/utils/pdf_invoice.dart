@@ -14,7 +14,7 @@ Future<Uint8List> generateInvoicePdf(Map<String, dynamic> orderData) async {
 
   // Load logo image
   final imageLogo = pw.MemoryImage(
-    (await rootBundle.load('images/logo.jpg')).buffer.asUint8List(),
+    (await rootBundle.load('images/4.png')).buffer.asUint8List(),
   );
 
   final date = orderData["timestamp"]?.toDate();

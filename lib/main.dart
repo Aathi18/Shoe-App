@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:shoe_app/pages/AddShoePage.dart';
 import 'package:shoe_app/pages/theme_provider.dart';
 
 import 'firebase_options.dart';
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
             "cartPage": (context) => const CartPage(),
             "ordersPage": (context) => const OrdersPage(),
             "itemPage": (context) => const Itempage(),
+            "addShoePage": (context) => const AddShoePage(),
             HomePage.appRouteName: (context) => const HomePage(),
           },
 
