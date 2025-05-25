@@ -39,6 +39,8 @@ dependencies:
   provider: ^6.1.1
   intl: ^0.18.1
   google_sign_in: ^6.2.1
+  pdf: ^3.10.4
+  printing: ^5.11.0
 
 
 

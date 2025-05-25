@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
     final user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFCEDDEE),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text("Shoe Store"),
         backgroundColor: Colors.blueAccent,

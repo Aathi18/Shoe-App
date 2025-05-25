@@ -3,6 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 import 'CartPage.dart';
+import 'package:printing/printing.dart';
+import '../utils/pdf_invoice.dart';
+
 
 class OrderDetailsPage extends StatelessWidget {
   final Map<String, dynamic> orderData;
@@ -98,6 +101,16 @@ class OrderDetailsPage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
               ),
             ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                final pdfData = await generateInvoicePdf(orderData);
+                await Printing.layoutPdf(onLayout: (format) => pdfData);
+              },
+              icon: const Icon(Icons.picture_as_pdf),
+              label: const Text("Download Invoice"),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+            ),
+
           ],
         ),
       ),
