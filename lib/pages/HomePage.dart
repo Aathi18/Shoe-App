@@ -47,6 +47,27 @@ class HomePage extends StatelessWidget {
               Navigator.pushNamed(context, "addShoePage");
             },
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.dashboard, size: 32, color: Colors.indigo),
+                tooltip: "Admin Dashboard",
+                onPressed: () {
+                  Navigator.pushNamed(context, "adminDashboardPage");
+                },
+              ),
+              const SizedBox(width: 16),
+              IconButton(
+                icon: const Icon(Icons.edit_note, size: 32, color: Colors.deepOrange),
+                tooltip: "Manage Shoes",
+                onPressed: () {
+                  Navigator.pushNamed(context, "manageShoesPage");
+                },
+              ),
+            ],
+          ),
+
 
 
           Consumer<CartProvider>(

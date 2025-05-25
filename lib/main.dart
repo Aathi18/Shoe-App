@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:shoe_app/pages/AddShoePage.dart';
+import 'package:shoe_app/pages/AdminDashboardPage.dart';
+import 'package:shoe_app/pages/ManageShoesPage.dart';
 import 'package:shoe_app/pages/theme_provider.dart';
 
 import 'firebase_options.dart';
@@ -53,6 +55,10 @@ class MyApp extends StatelessWidget {
             "ordersPage": (context) => const OrdersPage(),
             "itemPage": (context) => const Itempage(),
             "addShoePage": (context) => const AddShoePage(),
+            "manageShoesPage": (context) => const ManageShoesPage(),
+            "adminDashboardPage": (context) => const AdminDashboardPage(),
+
+
             HomePage.appRouteName: (context) => const HomePage(),
           },
 

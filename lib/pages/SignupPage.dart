@@ -45,7 +45,7 @@ class _SignupPageState extends State<SignupPage> {
           child: Column(
 
             children: [
-              Image.asset('assets/images/logo.jpg', height: 300),
+              Image.asset('images/4.png', height: 300),
               SizedBox(height: 20),
 
               const Text("Sign Up", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),

@@ -1,8 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class AddShoePage extends StatefulWidget {
   const AddShoePage({super.key});
@@ -50,20 +47,6 @@ class _AddShoePageState extends State<AddShoePage> {
 
     setState(() => _isLoading = false);
   }
-  Future<void> _pickImage() async {
-    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (picked != null) {
-      setState(() => _pickedImage = File(picked.path));
-    }
-  }
-
-  Future<String?> _uploadImage(File imageFile) async {
-    final fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    final ref = FirebaseStorage.instance.ref().child('shoe_images/$fileName.jpg');
-
-    final uploadTask = await ref.putFile(imageFile);
-    return await ref.getDownloadURL();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +93,9 @@ class _AddShoePageState extends State<AddShoePage> {
                   backgroundColor: Colors.green,
                   padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
                 ),
+
               ),
+
             ],
           ),
         ),
