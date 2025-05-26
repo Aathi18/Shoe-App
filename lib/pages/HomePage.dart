@@ -20,72 +20,31 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-      backgroundColor: Colors.blueAccent,
-        title: Row(children: [
-          Image.asset('images/4.png', height: 100),
-          SizedBox(width: 10),
-         Text("Shoe Store"),
-        ],
+        backgroundColor: Colors.blueAccent,
+        title: Row(
+          children: [
+            Image.asset('images/4.png', height: 100),
+            const SizedBox(width: 10),
+            const Text("Shoe Store"),
+          ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pushNamed(context, "ordersPage"),
-            child: const Text("My Orders", style: TextStyle(color: Colors.white)),
-          ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const UserProfilePage()),
-              );
-            },
-          ),
+          // Admin-only icons (keep these if you want admin features)
           IconButton(
             icon: const Icon(Icons.add_box),
+            tooltip: "Add Shoe",
             onPressed: () {
               Navigator.pushNamed(context, "addShoePage");
             },
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.dashboard, size: 32, color: Colors.indigo),
-                tooltip: "Admin Dashboard",
-                onPressed: () {
-                  Navigator.pushNamed(context, "adminDashboardPage");
-                },
-              ),
-              const SizedBox(width: 16),
-              IconButton(
-                icon: const Icon(Icons.edit_note, size: 32, color: Colors.deepOrange),
-                tooltip: "Manage Shoes",
-                onPressed: () {
-                  Navigator.pushNamed(context, "manageShoesPage");
-                },
-              ),
-            ],
+          IconButton(
+            icon: const Icon(Icons.dashboard, size: 28, color: Colors.white),
+            tooltip: "Admin Dashboard",
+            onPressed: () {
+              Navigator.pushNamed(context, "adminDashboardPage");
+            },
           ),
 
-
-
-          Consumer<CartProvider>(
-            builder: (context, cart, _) => IconButton(
-              icon: badges.Badge(
-                badgeContent: Text(
-                  cart.itemCount.toString(),
-                  style: const TextStyle(color: Colors.white, fontSize: 10),
-                ),
-                badgeStyle: const badges.BadgeStyle(badgeColor: Colors.red),
-                child: const Icon(Icons.shopping_cart),
-              ),
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const CartPage()),
-              ),
-            ),
-          ),
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, _) => IconButton(
               icon: Icon(
@@ -167,8 +126,8 @@ class HomePage extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     itemCount: shoes.length,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.75,
+                      crossAxisCount: 3,
+                      childAspectRatio: 1.3,
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 16,
                     ),
@@ -193,7 +152,7 @@ class HomePage extends StatelessWidget {
                           children: [
                             Image.network(
                               data['image'] ?? '',
-                              height: 100,
+                              height: 120,
                               width: double.infinity,
                               fit: BoxFit.contain,
                               errorBuilder: (_, __, ___) =>

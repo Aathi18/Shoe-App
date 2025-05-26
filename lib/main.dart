@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:shoe_app/pages/AddShoePage.dart';
 import 'package:shoe_app/pages/AdminDashboardPage.dart';
+import 'package:shoe_app/pages/MainBottomNavPage.dart';
 import 'package:shoe_app/pages/ManageShoesPage.dart';
 import 'package:shoe_app/pages/theme_provider.dart';
 
@@ -57,6 +58,7 @@ class MyApp extends StatelessWidget {
             "addShoePage": (context) => const AddShoePage(),
             "manageShoesPage": (context) => const ManageShoesPage(),
             "adminDashboardPage": (context) => const AdminDashboardPage(),
+            "mainNavPage": (context) => const MainBottomNavPage(),
 
 
             HomePage.appRouteName: (context) => const HomePage(),
@@ -68,7 +70,7 @@ class MyApp extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Scaffold(body: Center(child: CircularProgressIndicator()));
               } else if (snapshot.hasData) {
-                return const HomePage();
+                return const MainBottomNavPage();
               } else {
                 return const LoginPage();
               }
