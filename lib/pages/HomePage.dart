@@ -3,15 +3,22 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:shoe_app/pages/theme_provider.dart';
-
 import '../providers/cart_provider.dart';
 import 'CartPage.dart';
 import 'UserProfilePage.dart';
+import 'package:shoe_app/pages/theme_provider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   static const appRouteName = "/homepage";
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
 
   @override
   Widget build(BuildContext context) {
@@ -23,39 +30,28 @@ class HomePage extends StatelessWidget {
         backgroundColor: Colors.blueAccent,
         title: Row(
           children: [
-            Image.asset('images/4.png', height: 100),
-            const SizedBox(width: 10),
+            Image.asset('images/4.png', height: 50),
+            const SizedBox(width: 8),
             const Text("Shoe Store"),
           ],
         ),
         actions: [
-          // Admin-only icons (keep these if you want admin features)
           IconButton(
             icon: const Icon(Icons.add_box),
             tooltip: "Add Shoe",
-            onPressed: () {
-              Navigator.pushNamed(context, "addShoePage");
-            },
+            onPressed: () => Navigator.pushNamed(context, "addShoePage"),
           ),
           IconButton(
             icon: const Icon(Icons.dashboard, size: 28, color: Colors.white),
             tooltip: "Admin Dashboard",
-            onPressed: () {
-              Navigator.pushNamed(context, "adminDashboardPage");
-            },
+            onPressed: () => Navigator.pushNamed(context, "adminDashboardPage"),
           ),
-
           Consumer<ThemeProvider>(
             builder: (context, themeProvider, _) => IconButton(
-              icon: Icon(
-                themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
-              ),
-              onPressed: () {
-                themeProvider.toggleTheme();
-              },
+              icon: Icon(themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode),
+              onPressed: () => themeProvider.toggleTheme(),
             ),
           ),
-
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
@@ -68,46 +64,73 @@ class HomePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // 👤 Display user info
+            // 🔍 Search Bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) => setState(() {
+                  _searchQuery = value.toLowerCase();
+                }),
+                decoration: InputDecoration(
+                  hintText: 'Search shoes...',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+
+            // 👤 User info
             if (user != null)
               Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
                   children: [
                     CircleAvatar(
-                      radius: 30,
+                      radius: 28,
                       backgroundImage: user.photoURL != null
                           ? NetworkImage(user.photoURL!)
                           : null,
                       child: user.photoURL == null
-                          ? const Icon(Icons.person, size: 30)
+                          ? const Icon(Icons.person, size: 28)
                           : null,
                     ),
                     const SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          user.displayName ?? 'Welcome!',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          user.email ?? '',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.black54,
-                          ),
-                        ),
+                        Text(user.displayName ?? 'Welcome!',
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(user.email ?? '',
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.black54)),
                       ],
+                    ),
+                    const Spacer(),
+                    Consumer<CartProvider>(
+                      builder: (context, cart, _) => badges.Badge(
+                        badgeContent: Text(
+                          cart.itemCount.toString(),
+                          style: const TextStyle(color: Colors.white, fontSize: 10),
+                        ),
+                        badgeStyle: const badges.BadgeStyle(badgeColor: Colors.red),
+                        child: IconButton(
+                          icon: const Icon(Icons.shopping_cart),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const CartPage()),
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
 
-            // 👟 Product grid
+            // 🛍️ Shoe Grid
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance.collection('shoes').snapshots(),
@@ -120,19 +143,24 @@ class HomePage extends StatelessWidget {
                     return const Center(child: Text("No shoes found"));
                   }
 
-                  final shoes = snapshot.data!.docs;
+                  final allShoes = snapshot.data!.docs;
+                  final filteredShoes = allShoes.where((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final name = data['name']?.toString().toLowerCase() ?? '';
+                    return name.contains(_searchQuery);
+                  }).toList();
 
                   return GridView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: shoes.length,
+                    itemCount: filteredShoes.length,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 1.3,
+                      crossAxisCount: 2,
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 16,
+                      childAspectRatio: 0.8,
                     ),
                     itemBuilder: (context, index) {
-                      final shoe = shoes[index];
+                      final shoe = filteredShoes[index];
                       final data = shoe.data() as Map<String, dynamic>;
 
                       final price = data['price'];
@@ -152,27 +180,31 @@ class HomePage extends StatelessWidget {
                           children: [
                             Image.network(
                               data['image'] ?? '',
-                              height: 120,
+                              height: 80,
                               width: double.infinity,
                               fit: BoxFit.contain,
                               errorBuilder: (_, __, ___) =>
                               const Icon(Icons.image_not_supported),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 6),
                             Text(
                               data['name'] ?? 'No Name',
                               style: const TextStyle(
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF475269),
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               data['description'] ?? '',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                                 color: Colors.grey.shade600,
                               ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             const Spacer(),
                             Row(
@@ -182,7 +214,7 @@ class HomePage extends StatelessWidget {
                                   priceText,
                                   style: const TextStyle(
                                     color: Colors.redAccent,
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
