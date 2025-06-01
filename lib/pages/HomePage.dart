@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as badges;
 import '../providers/cart_provider.dart';
 import 'CartPage.dart';
+import 'ShoeDetailsPage.dart';
 import 'UserProfilePage.dart';
 import 'package:shoe_app/pages/theme_provider.dart';
 
@@ -110,22 +111,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                     const Spacer(),
-                    Consumer<CartProvider>(
-                      builder: (context, cart, _) => badges.Badge(
-                        badgeContent: Text(
-                          cart.itemCount.toString(),
-                          style: const TextStyle(color: Colors.white, fontSize: 10),
-                        ),
-                        badgeStyle: const badges.BadgeStyle(badgeColor: Colors.red),
-                        child: IconButton(
-                          icon: const Icon(Icons.shopping_cart),
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => const CartPage()),
-                          ),
-                        ),
-                      ),
-                    ),
+
                   ],
                 ),
               ),
@@ -168,78 +154,72 @@ class _HomePageState extends State<HomePage> {
                           ? "\$${price.toStringAsFixed(2)}"
                           : "\$0.00";
 
-                      return Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFF5F9FD),
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 4)],
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Image.network(
-                              data['image'] ?? '',
-                              height: 80,
-                              width: double.infinity,
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.image_not_supported),
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ShoeDetailsPage(shoeId: shoe.id, shoeData: data),
                             ),
-                            const SizedBox(height: 6),
-                            Text(
-                              data['name'] ?? 'No Name',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF475269),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF5F9FD),
+                            borderRadius: BorderRadius.circular(12),
+                            boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 4)],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.network(
+                                data['image'] ?? '',
+                                height: 80,
+                                width: double.infinity,
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              data['description'] ?? '',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
+                              const SizedBox(height: 6),
+                              Text(
+                                data['name'] ?? 'No Name',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF475269),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const Spacer(),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  priceText,
-                                  style: const TextStyle(
-                                    color: Colors.redAccent,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
+                              Text(
+                                data['description'] ?? '',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey.shade600,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const Spacer(),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    priceText,
+                                    style: const TextStyle(
+                                      color: Colors.redAccent,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.add_shopping_cart, color: Colors.blue),
-                                  onPressed: () {
-                                    Provider.of<CartProvider>(context, listen: false).addItem(
-                                      id: shoe.id,
-                                      name: data['name'],
-                                      image: data['image'],
-                                      price: (data['price'] as num).toDouble(), quantity: null,
-                                    );
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text("${data['name']} added to cart"),
-                                        duration: const Duration(seconds: 1),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
-                          ],
+
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       );
+
                     },
                   );
                 },
