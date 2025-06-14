@@ -3,7 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
-import 'OrderDetailsPage.dart'; // 👈 Import your details page
+import 'OrderDetailsPage.dart';
+import 'HomePage.dart'; // 👈 Import HomePage so we can go back
 
 class OrdersPage extends StatelessWidget {
   const OrdersPage({super.key});
@@ -22,13 +23,24 @@ class OrdersPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("My Orders"),
         backgroundColor: Colors.blueAccent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: "Back to Home",
+          onPressed: () {
+            // ✅ Back to Home cleanly
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const HomePage()),
+                  (route) => false,
+            );
+          },
+        ),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection("orders")
             .where("userId", isEqualTo: user.uid)
-            //.orderBy("timestamp", descending: true)
-            .snapshots(), // 🔁 Removed .orderBy to avoid timestamp delay bug
+            .snapshots(), // Good: no orderBy avoids missing timestamps
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -73,7 +85,7 @@ class OrdersPage extends StatelessWidget {
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 8),
-                        Text("Total: \$${total.toStringAsFixed(2)}"),
+                        Text("Total: ₹${total.toStringAsFixed(2)}"),
                         const SizedBox(height: 8),
                         const Text("Items:", style: TextStyle(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),

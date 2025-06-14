@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../providers/cart_provider.dart';
+import 'OrdersPage.dart';
 
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
@@ -35,7 +36,7 @@ class CartPage extends StatelessWidget {
         'quantity': item.quantity,
       }).toList(),
       'total': cart.totalAmount,
-      'timestamp': Timestamp.now(),
+      'timestamp': FieldValue.serverTimestamp(),
     };
 
     try {
@@ -43,14 +44,18 @@ class CartPage extends StatelessWidget {
       cart.clearCart();
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Order placed successfully!")),
+        const SnackBar(content: Text("✅ Order placed successfully!")),
       );
 
-      Navigator.pop(context); // Go back to homepage
+      // ✅ Redirect to OrdersPage instead of popping back
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const OrdersPage()),
+      );
 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to place order: ${e.toString()}")),
+        SnackBar(content: Text("❌ Failed to place order: ${e.toString()}")),
       );
     }
   }
@@ -83,7 +88,9 @@ class CartPage extends StatelessWidget {
                   ),
                   title: Text(item.name),
                   subtitle: Text("₹${item.price} x ${item.quantity}"),
-                  trailing: Text("₹${(item.price * item.quantity).toStringAsFixed(2)}"),
+                  trailing: Text(
+                    "₹${(item.price * item.quantity).toStringAsFixed(2)}",
+                  ),
                 );
               },
             ),

@@ -1,12 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:badges/badges.dart' as badges;
 import '../providers/cart_provider.dart';
 import 'CartPage.dart';
 import 'ShoeDetailsPage.dart';
-import 'UserProfilePage.dart';
 import 'package:shoe_app/pages/theme_provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -83,7 +83,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            // 👤 User info
+            // 👤 User info + Cart Badge
             if (user != null)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -111,7 +111,22 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                     const Spacer(),
-
+                    Consumer<CartProvider>(
+                      builder: (context, cart, _) => badges.Badge(
+                        badgeContent: Text(
+                          cart.itemCount.toString(),
+                          style: const TextStyle(color: Colors.white, fontSize: 10),
+                        ),
+                        badgeStyle: const badges.BadgeStyle(badgeColor: Colors.red),
+                        child: IconButton(
+                          icon: const Icon(Icons.shopping_cart),
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => const CartPage()),
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -140,10 +155,10 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.all(16),
                     itemCount: filteredShoes.length,
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
+                      crossAxisCount: 3,
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 16,
-                      childAspectRatio: 0.8,
+                      childAspectRatio: 0.7,
                     ),
                     itemBuilder: (context, index) {
                       final shoe = filteredShoes[index];
@@ -153,6 +168,7 @@ class _HomePageState extends State<HomePage> {
                       final priceText = (price is int || price is double)
                           ? "\$${price.toStringAsFixed(2)}"
                           : "\$0.00";
+                      final rating = (data['rating'] ?? 4.0).toDouble();
 
                       return GestureDetector(
                         onTap: () {
@@ -168,7 +184,9 @@ class _HomePageState extends State<HomePage> {
                           decoration: BoxDecoration(
                             color: const Color(0xFFF5F9FD),
                             borderRadius: BorderRadius.circular(12),
-                            boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 4)],
+                            boxShadow: [
+                              BoxShadow(color: Colors.grey.shade300, blurRadius: 4)
+                            ],
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,6 +218,15 @@ class _HomePageState extends State<HomePage> {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
+                              const SizedBox(height: 6),
+                              RatingBarIndicator(
+                                rating: rating,
+                                itemCount: 5,
+                                itemSize: 16,
+                                unratedColor: Colors.grey.shade300,
+                                itemBuilder: (context, _) =>
+                                const Icon(Icons.star, color: Colors.amber),
+                              ),
                               const Spacer(),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -212,14 +239,30 @@ class _HomePageState extends State<HomePage> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-
+                                  IconButton(
+                                    icon: const Icon(Icons.add_shopping_cart, color: Colors.blue),
+                                    onPressed: () {
+                                      Provider.of<CartProvider>(context, listen: false).addItem(
+                                        id: shoe.id,
+                                        name: data['name'],
+                                        image: data['image'],
+                                        price: (data['price'] as num).toDouble(),
+                                        quantity: 1,
+                                      );
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text("${data['name']} added to cart"),
+                                          duration: const Duration(seconds: 1),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ],
                               ),
                             ],
                           ),
                         ),
                       );
-
                     },
                   );
                 },
